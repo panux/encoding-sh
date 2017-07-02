@@ -61,7 +61,7 @@ func encode(i interface{}) string {
 			for j := 0; j < ival.Len(); j++ {
 				o[j] = encode(ival.Index(j).Interface())
 			}
-			return fmt.Sprintf("(%s)", strings.Join(o, " "))
+			return fmt.Sprintf(`"%s"`, strings.Join(o, " "))
 		case reflect.Array:
 			return encode(reflect.Indirect(ival.Addr()).Slice(0, ival.Len()).Interface())
 		case reflect.Ptr:
