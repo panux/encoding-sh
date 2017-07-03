@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 var basic = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM"
@@ -59,7 +60,16 @@ func encode(i interface{}) string {
 		case reflect.Slice:
 			o := make([]string, ival.Len())
 			for j := 0; j < ival.Len(); j++ {
-				o[j] = encode(ival.Index(j).Interface())
+				v := encode(ival.Index(j).Interface())
+
+				f, _ := utf8.DecodeRuneInString(v)
+				if f == '"' {
+					l, _ := utf8.DecodeLastRuneInString(v)
+					if l == '"' {
+						v = v[1 : len(v)-1] //Remove quotes
+					}
+				}
+				o[j] = v
 			}
 			return fmt.Sprintf(`"%s"`, strings.Join(o, " "))
 		case reflect.Array:
